@@ -9,7 +9,7 @@ case node[:platform]
 	when "debian", "ubuntu"
 		#add CloudPassage repository
 		execute "add-cloudpassage-repository" do
-			command "echo 'deb http://packages.cloudpassage.com/4e750694a24da434d6fdf0bf271ad361/debian debian main' | sudo tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null"
+			command "echo 'deb http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/debian debian main' | sudo tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null"
 			action :run
 		end
 
