@@ -21,6 +21,7 @@ This cookbook doesn't have direct dependencies on other cookbooks.
 Attributes
 ==========
 
+* `node['cloudpassage']['repository_key']` - The CloudPassage repository key, defaults to "4e750694a24da434d6fdf0bf271ad361"
 * `node['cloudpassage']['license_key']` - Your CloudPassage license key.
 
 Usage
