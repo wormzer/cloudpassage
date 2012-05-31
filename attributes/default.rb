@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: chef-cloudpassage
+# Cookbook Name:: cloudpassage
 # Attributes:: default
 #
 # Copyright 2012, Escape Studios

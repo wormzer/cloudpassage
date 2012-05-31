@@ -27,7 +27,7 @@ Attributes
 Usage
 =====
 
-1) include `recipe[chef-cloudpassage]` in a run list
+1) include `recipe[cloudpassage]` in a run list
 2)
 	change the `node['cloudpassage']['license_key']` attribute to your CloudPassage license key
 	--- OR ---
