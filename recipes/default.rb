@@ -57,12 +57,12 @@ end
 #install the daemon
 package "cphalo" do
 	action :install
-	notifies :restart, "service[cphalod]", :immediately
+	notifies :start, "service[cphalod]", :immediately
 end
 
 #start the daemon
 service "cphalod" do
-	start_command "/etc/init.d/cphalod start --api-key=#{node[:cloudpassage][:license_key]}"
+	start_command "sudo /etc/init.d/cphalod start --api-key=#{node[:cloudpassage][:license_key]}"
 	stop_command "service cphalod stop"
 	status_command "service cphalod status"
 	restart_command "service cphalod restart"
