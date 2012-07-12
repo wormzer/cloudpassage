@@ -15,7 +15,7 @@ case node[:platform]
 		command = "echo '[cloudpassage]\nname=CloudPassage production\nbaseurl=http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/redhat/$basearch\ngpgcheck=1' | sudo tee /etc/yum.repos.d/cloudpassage.repo > /dev/null"
 end
 
-execute "add-cloudpassage-repository" do
+execute "cloudpassage-add-repository" do
 	command "#{command}"
 	action :run
 end
@@ -35,7 +35,7 @@ case node[:platform]
 		gpg_key_already_installed = "sudo rpm -qa gpg-pubkey* | xargs -i rpm -qi {} | grep cloudpassage"
 end
 
-execute "import-cloudpassage-public-key" do
+execute "cloudpassage-import-public-key" do
 	command "#{command}" 
 	action :run
 	not_if gpg_key_already_installed
@@ -49,7 +49,7 @@ case node[:platform]
 		command = "sudo yum update --assumeyes"
 end
 
-execute "update-repositories" do
+execute "cloudpassage-update-repositories" do
 	command "#{command}" 
 	action :run
 end
