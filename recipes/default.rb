@@ -2,7 +2,7 @@
 # Cookbook Name:: cloudpassage
 # Recipe:: default
 #
-# Copyright 2012, Escape Studios
+# Copyright 2012-2013, Escape Studios
 #
 
 #add CloudPassage repository
