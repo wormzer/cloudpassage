@@ -5,68 +5,68 @@
 # Copyright 2012-2013, Escape Studios
 #
 
-#add CloudPassage repository
 case node[:platform]
-	when "debian", "ubuntu"
-		#apt
-		command = "echo 'deb http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/debian debian main' | sudo tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null"
-	when "redhat", "centos", "fedora"
-		#yum
-		command = "echo '[cloudpassage]\nname=CloudPassage production\nbaseurl=http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/redhat/$basearch\ngpgcheck=1' | sudo tee /etc/yum.repos.d/cloudpassage.repo > /dev/null"
+    when "debian", "ubuntu"
+        #add CloudPassage repository
+        command_add_repo = "echo 'deb http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/debian debian main' | sudo tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null"
+
+        #install curl
+        package "curl" do
+            action :install
+        end
+
+        #import CloudPassage public key
+        command_import = "curl http://packages.cloudpassage.com/cloudpassage.packages.key | sudo apt-key add -"
+        gpg_key_already_installed = "sudo apt-key list | grep cloudpassage"
+
+        #update the local package list
+        command_update_repos = "sudo apt-get update"
+    when "redhat", "centos", "fedora", "scientific", "amazon"
+        #add CloudPassage repository
+        command_add_repo = "echo '[cloudpassage]\nname=CloudPassage production\nbaseurl=http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/redhat/$basearch\ngpgcheck=1' | sudo tee /etc/yum.repos.d/cloudpassage.repo > /dev/null"
+
+        #import CloudPassage public key
+        command_import = "sudo rpm --import http://packages.cloudpassage.com/cloudpassage.packages.key"
+        gpg_key_already_installed = "sudo rpm -qa gpg-pubkey* | xargs -i rpm -qi {} | grep cloudpassage"
+
+        #update the local package list
+        command_update_repos = "sudo yum update --assumeyes"
 end
 
-execute "cloudpassage-add-repository" do
-	command "#{command}"
-	action :run
+#add CloudPassage repository
+execute "cloudpassage-repo" do
+    command "#{command_add_repo}"
+    action :run
+    not_if gpg_key_already_installed
+    notifies :run, "execute[cloudpassage-import-public-key]", :immediately
 end
 
 #import CloudPassage public key
-case node[:platform]
-	when "debian", "ubuntu"
-		#install curl
-		package "curl" do
-			action :install
-		end
-
-		command = "curl http://packages.cloudpassage.com/cloudpassage.packages.key | sudo apt-key add -"
-		gpg_key_already_installed = "sudo apt-key list | grep cloudpassage"
-	when "redhat", "centos", "fedora"
-		command = "sudo rpm --import http://packages.cloudpassage.com/cloudpassage.packages.key"
-		gpg_key_already_installed = "sudo rpm -qa gpg-pubkey* | xargs -i rpm -qi {} | grep cloudpassage"
-end
-
 execute "cloudpassage-import-public-key" do
-	command "#{command}" 
-	action :run
-	not_if gpg_key_already_installed
+    command "#{command_import}" 
+    action :nothing
+    notifies :run, "execute[cloudpassage-apt-get-update]", :immediately
 end
 
-#update repositories
-case node[:platform]
-	when "debian", "ubuntu"
-		command = "sudo apt-get update"
-	when "redhat", "centos", "fedora"
-		command = "sudo yum update --assumeyes"
+#update the local package list
+execute "cloudpassage-apt-get-update" do
+    command "#{command_update_repos}" 
+    action :nothing
 end
 
-execute "cloudpassage-update-repositories" do
-	command "#{command}" 
-	action :run
-end
-
-#install the daemon
+#install/upgrade the daemon
 package "cphalo" do
-	action :install
-	notifies :start, "service[cphalod]", :immediately
+    action :upgrade
+    notifies :restart, "service[cphalod]", :immediately
 end
 
 #start the daemon
 service "cphalod" do
-	start_command "sudo /etc/init.d/cphalod start --api-key=#{node[:cloudpassage][:license_key]}"
-	stop_command "service cphalod stop"
-	status_command "service cphalod status"
-	restart_command "service cphalod restart"
-	supports [:start, :stop, :status, :restart]
-	#starts the service if it's not running and enables it to start at system boot time
-	action [:enable, :start]
+    start_command "sudo /etc/init.d/cphalod start --api-key=#{node[:cloudpassage][:license_key]}"
+    stop_command "service cphalod stop"
+    status_command "service cphalod status"
+    restart_command "service cphalod restart"
+    supports [:start, :stop, :status, :restart]
+    #starts the service if it's not running and enables it to start at system boot time
+    action [:enable, :start]
 end

@@ -15,8 +15,13 @@ This cookbook doesn't have direct dependencies on other cookbooks.
 
 ## Platforms:
 
-* Ubuntu
 * Debian
+* Ubuntu
+* RHEL
+* CentOS
+* Fedora
+* Scientific
+* Amazon
 
 Attributes
 ==========
@@ -29,9 +34,9 @@ Usage
 
 1) include `recipe[cloudpassage]` in a run list
 2)
-	change the `node['cloudpassage']['license_key']` attribute to your CloudPassage license key
-	--- OR ---
-	override the attribute on a higher level (http://wiki.opscode.com/display/chef/Attributes#Attributes-AttributesPrecedence)
+    change the `node['cloudpassage']['license_key']` attribute to your CloudPassage license key
+    --- OR ---
+    override the attribute on a higher level (http://wiki.opscode.com/display/chef/Attributes#Attributes-AttributesPrecedence)
 
 References
 ==========
