@@ -62,11 +62,12 @@ end
 
 #start the daemon
 service "cphalod" do
-    start_command "sudo /etc/init.d/cphalod start --api-key=#{node[:cloudpassage][:license_key]}"
+    start_command "sudo /etc/init.d/cphalod start --daemon-key=#{node[:cloudpassage][:license_key]}"
     stop_command "service cphalod stop"
     status_command "service cphalod status"
-    restart_command "service cphalod restart"
+    restart_command "service cphalod restart --daemon-key=#{node[:cloudpassage][:license_key]}"
     supports [:start, :stop, :status, :restart]
     #starts the service if it's not running and enables it to start at system boot time
     action [:enable, :start]
 end
+
