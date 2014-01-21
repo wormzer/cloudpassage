@@ -30,7 +30,7 @@ case node[:platform]
         gpg_key_already_installed = "rpm -qa gpg-pubkey* | xargs -i rpm -qi {} | grep cloudpassage"
 
         #update the local package list
-        command_update_repos = "yum update --assumeyes"
+        command_update_repos = "yum update -y"
 end
 
 #add CloudPassage repository
