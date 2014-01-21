@@ -8,7 +8,7 @@
 case node[:platform]
     when "debian", "ubuntu"
         #add CloudPassage repository
-        command_add_repo = "echo 'deb http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/debian debian main' | sudo tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null"
+        command_add_repo = "echo 'deb http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/debian debian main' | tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null"
 
         #install curl
         package "curl" do
@@ -16,21 +16,21 @@ case node[:platform]
         end
 
         #import CloudPassage public key
-        command_import = "curl http://packages.cloudpassage.com/cloudpassage.packages.key | sudo apt-key add -"
-        gpg_key_already_installed = "sudo apt-key list | grep cloudpassage"
+        command_import = "curl http://packages.cloudpassage.com/cloudpassage.packages.key | apt-key add -"
+        gpg_key_already_installed = "apt-key list | grep cloudpassage"
 
         #update the local package list
-        command_update_repos = "sudo apt-get update"
+        command_update_repos = "apt-get update"
     when "redhat", "centos", "fedora", "scientific", "amazon"
         #add CloudPassage repository
-        command_add_repo = "echo '[cloudpassage]\nname=CloudPassage production\nbaseurl=http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/redhat/$basearch\ngpgcheck=1' | sudo tee /etc/yum.repos.d/cloudpassage.repo > /dev/null"
+        command_add_repo = "echo '[cloudpassage]\nname=CloudPassage production\nbaseurl=http://packages.cloudpassage.com/#{node[:cloudpassage][:repository_key]}/redhat/$basearch\ngpgcheck=1' | tee /etc/yum.repos.d/cloudpassage.repo > /dev/null"
 
         #import CloudPassage public key
-        command_import = "sudo rpm --import http://packages.cloudpassage.com/cloudpassage.packages.key"
-        gpg_key_already_installed = "sudo rpm -qa gpg-pubkey* | xargs -i rpm -qi {} | grep cloudpassage"
+        command_import = "rpm --import http://packages.cloudpassage.com/cloudpassage.packages.key"
+        gpg_key_already_installed = "rpm -qa gpg-pubkey* | xargs -i rpm -qi {} | grep cloudpassage"
 
         #update the local package list
-        command_update_repos = "sudo yum update --assumeyes"
+        command_update_repos = "yum update --assumeyes"
 end
 
 #add CloudPassage repository
@@ -62,7 +62,7 @@ end
 
 #start the daemon
 service "cphalod" do
-    start_command "sudo /etc/init.d/cphalod start --daemon-key=#{node[:cloudpassage][:license_key]}"
+    start_command "/etc/init.d/cphalod start --daemon-key=#{node[:cloudpassage][:license_key]}"
     stop_command "service cphalod stop"
     status_command "service cphalod status"
     restart_command "service cphalod restart --daemon-key=#{node[:cloudpassage][:license_key]}"
