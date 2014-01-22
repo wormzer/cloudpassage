@@ -30,7 +30,7 @@ case node[:platform]
         gpg_key_already_installed = "rpm -qa gpg-pubkey* | xargs -i rpm -qi {} | grep cloudpassage"
 
         #update the local package list
-#        command_update_repos = "yum update -y"
+        command_update_repos = "yum update -y"
 end
 
 #add CloudPassage repository
@@ -45,7 +45,7 @@ end
 execute "cloudpassage-import-public-key" do
     command "#{command_import}" 
     action :nothing
-    notifies :run, "execute[cloudpassage-apt-get-update]", :immediately
+#    notifies :run, "execute[cloudpassage-apt-get-update]", :immediately
 end
 
 #update the local package list
